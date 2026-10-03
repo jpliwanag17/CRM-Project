@@ -64,7 +64,11 @@ class ContactController extends Controller
     public function show(Contact $contact): View
     {
         $this->ensureCanAccess($contact);
-        $contact->load(['company', 'activities']);
+        $contact->load([
+            'company',
+            'activities',
+            'tasks' => fn ($query) => $query->where('is_completed', false)->orderBy('due_at'),
+        ]);
 
         return view('contacts.show', compact('contact'));
     }

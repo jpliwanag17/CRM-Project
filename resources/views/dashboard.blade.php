@@ -30,13 +30,47 @@
                 </div>
             </article>
             <article class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-                <div class="flex items-center justify-between"><h2 class="text-lg font-bold text-slate-950">Recent activities</h2><a href="{{ route('broadcast.index') }}" class="text-sm font-semibold text-indigo-600">Email campaigns</a></div>
+                <div class="flex items-center justify-between"><h2 class="text-lg font-bold text-slate-950">Upcoming tasks</h2><a href="{{ route('contacts.index') }}" class="text-sm font-semibold text-indigo-600">View contacts</a></div>
+                <div class="mt-5 divide-y divide-slate-100">
+                    @forelse ($upcomingTasks as $task)
+                        @php
+                            $taskTypeColor = match ($task->type) {
+                                'call' => 'bg-emerald-100 text-emerald-700',
+                                'meeting' => 'bg-amber-100 text-amber-700',
+                                'email' => 'bg-sky-100 text-sky-700',
+                                default => 'bg-indigo-100 text-indigo-700',
+                            };
+                        @endphp
+                        <div class="flex items-start gap-3 py-3 first:pt-0 last:pb-0">
+                            <form action="{{ route('tasks.toggle', $task) }}" method="POST" class="pt-1">
+                                @csrf
+                                @method('PATCH')
+                                <input type="checkbox" aria-label="Complete {{ $task->title }}" onchange="this.form.submit()" class="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
+                            </form>
+                            <div class="min-w-0 flex-1">
+                                <p class="text-sm font-semibold text-slate-900">{{ $task->title }}</p>
+                                <div class="mt-1 flex flex-wrap items-center gap-2 text-xs text-slate-500">
+                                    <span class="rounded-full px-2 py-1 font-semibold {{ $taskTypeColor }}">{{ ucfirst($task->type) }}</span>
+                                    <span>{{ $task->due_at->format('M j, Y g:i A') }}</span>
+                                    @if ($task->contact)
+                                        <a href="{{ route('contacts.show', $task->contact) }}" class="font-semibold text-indigo-600 hover:text-indigo-800">{{ $task->contact->first_name }} {{ $task->contact->last_name }}</a>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    @empty
+                        <p class="py-6 text-sm text-slate-500">No upcoming tasks.</p>
+                    @endforelse
+                </div>
+                <div class="mt-6 border-t border-slate-100 pt-5">
+                    <h3 class="text-sm font-bold text-slate-950">Recent activities</h3>
                 <div class="mt-5 divide-y divide-slate-100">
                     @forelse ($recentActivities as $activity)
                         <a href="{{ route('contacts.show', $activity->contact) }}" class="block py-3 first:pt-0 last:pb-0 hover:text-indigo-600"><p class="text-sm font-semibold">{{ $activity->contact->first_name }} {{ $activity->contact->last_name }} <span class="font-normal text-slate-500">{{ $activity->created_at->diffForHumans() }}</span></p><p class="mt-1 truncate text-sm text-slate-600">{{ $activity->body }}</p></a>
                     @empty
                         <p class="py-6 text-sm text-slate-500">No recent activities.</p>
                     @endforelse
+                </div>
                 </div>
             </article>
         </section>

@@ -33,6 +33,11 @@ class User extends Authenticatable
         return $this->hasMany(Contact::class, 'assigned_to');
     }
 
+    public function tasks(): HasMany
+    {
+        return $this->hasMany(Task::class);
+    }
+
     /**
      * Get the attributes that should be cast.
      *

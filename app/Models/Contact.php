@@ -36,6 +36,11 @@ class Contact extends Model
         return $this->hasMany(Note::class)->latest();
     }
 
+    public function tasks(): HasMany
+    {
+        return $this->hasMany(Task::class);
+    }
+
     protected function casts(): array
     {
         return [

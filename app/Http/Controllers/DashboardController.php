@@ -35,6 +35,13 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
 
+        $upcomingTasks = auth()->user()->tasks()
+            ->where('is_completed', false)
+            ->with('contact')
+            ->orderBy('due_at', 'asc')
+            ->take(5)
+            ->get();
+
         return view('dashboard', [
             'totalContacts' => (clone $contacts)->count(),
             'totalCompanies' => Company::count(),
@@ -44,6 +51,7 @@ class DashboardController extends Controller
             'statusCounts' => $statusCounts,
             'recentContacts' => $recentContacts,
             'recentActivities' => $recentActivities,
+            'upcomingTasks' => $upcomingTasks,
         ]);
     }
 }
